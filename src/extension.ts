@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const execAsync = promisify(exec);
 
@@ -182,67 +184,112 @@ async function executeAction(
   }
 
   const showNotification = action.showNotification !== false;
-  const filePath = uri.fsPath;
+  const fullFilePath = uri.fsPath;
+  const filePath = path.parse(fullFilePath);
+  const isDirectory = fs.existsSync(fullFilePath) && fs.statSync(fullFilePath).isDirectory();
+
+  // Calculate default working directory
+  let defaultWorkDir = filePath.dir; // Default to parent directory
+  if (isDirectory) {
+    // If it's a directory, use the full path to it
+    defaultWorkDir = fullFilePath;
+  }
+
+  const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || defaultWorkDir;
   
-  // Calculate directory and workspace paths
-  const dir = uri.fsPath.substring(0, uri.fsPath.lastIndexOf('/'));
-  const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || dir;
+  // Log parsed path info early for debugging
+  console.log(`[${action.id}] === Path Parsing ===`);
+  console.log(`[${action.id}] fullFilePath: ${fullFilePath}`);
+  console.log(`[${action.id}] filePath.dir: ${filePath.dir}`);
+  console.log(`[${action.id}] filePath.base: ${filePath.base}`);
+  console.log(`[${action.id}] filePath.root: ${filePath.root}`);
+  console.log(`[${action.id}] isDirectory: ${isDirectory}`);
+  console.log(`[${action.id}] defaultWorkDir: ${defaultWorkDir}`);
+  console.log(`[${action.id}] workspaceRoot: ${workspaceRoot}`);
+  console.log(`[${action.id}] action.cwd config: ${action.cwd || '(not set)'}`);
   
   // Build final command - replace placeholders
   let finalCommand = action.command;
   
-  // Replace {file} placeholder
-  if (finalCommand.includes('{file}')) {
-    finalCommand = finalCommand.replace(/{file}/g, `"${filePath}"`);
-  } else if (!finalCommand.includes('{files}')) {
-    // Auto-append file path if no placeholder exists
-    finalCommand = `${finalCommand} "${filePath}"`;
-  }
+  // Replace {path} with full path
+  finalCommand = finalCommand.replace(/{path}/g, `"${fullFilePath}"`);
+  
+  // Replace {file} with filename only
+  finalCommand = finalCommand.replace(/{file}/g, `"${filePath.base}"`);
+  
+  // Replace {dir} with directory path
+  finalCommand = finalCommand.replace(/{dir}/g, `"${filePath.dir}"`);
+  
+  // Replace {filename} (alias for {file})
+  finalCommand = finalCommand.replace(/{filename}/g, `"${filePath.base}"`);
+  
+  // Replace {workspace} with workspace root
+  finalCommand = finalCommand.replace(/{workspace}/g, `"${workspaceRoot}"`);
 
   // Replace {files} for multiple selection
   if (selectedFiles && selectedFiles.length > 0) {
     const filePaths = selectedFiles.map(f => `"${f.fsPath}"`).join(' ');
     finalCommand = finalCommand.replace(/{files}/g, filePaths);
   } else {
-    // Fallback to single file if no multi-selection
-    finalCommand = finalCommand.replace(/{files}/g, `"${filePath}"`);
+    // Fallback to single file if {files} is used but no multi-selection
+    finalCommand = finalCommand.replace(/{files}/g, `"${fullFilePath}"`);
   }
 
-  // Replace {dir} with directory of file
-  finalCommand = finalCommand.replace(/{dir}/g, `"${dir}"`);
-
-  // Replace {filename} with just the filename (no path)
-  const filename = uri.fsPath.substring(uri.fsPath.lastIndexOf('/') + 1);
-  finalCommand = finalCommand.replace(/{filename}/g, `"${filename}"`);
+  // Auto-append file path if no placeholder exists
+  if (!action.command.includes('{') && !action.command.includes('}')) {
+    finalCommand = `${finalCommand} "${fullFilePath}"`;
+  }
 
   // Determine working directory
-  let workingDir = workspaceRoot;
+  let workingDir: string;
   if (action.cwd) {
+    console.log(`[${action.id}] === CWD Replacement ===`);
+    console.log(`[${action.id}] action.cwd before: ${action.cwd}`);
+    
     // Replace placeholders in cwd
     workingDir = action.cwd
-      .replace(/{file}/g, filePath)
-      .replace(/{dir}/g, dir)
+      .replace(/{path}/g, fullFilePath)
+      .replace(/{file}/g, filePath.base)
+      .replace(/{dir}/g, filePath.dir)
       .replace(/{workspace}/g, workspaceRoot);
+    
+    console.log(`[${action.id}] workingDir after replacement: ${workingDir}`);
     
     // Remove quotes if present (we don't need them for cwd)
     workingDir = workingDir.replace(/^["']|["']$/g, '');
+    
+    console.log(`[${action.id}] workingDir after quote removal: ${workingDir}`);
   } else {
-    // Default: use directory of the file
-    workingDir = dir;
+    // Default: use directory (either the selected folder or the file's parent)
+    workingDir = defaultWorkDir;
+    console.log(`[${action.id}] Using defaultWorkDir: ${workingDir}`);
   }
+
+  console.log(`[${action.id}] === Final Values ===`);
+  console.log(`[${action.id}] Final command: ${finalCommand}`);
+  console.log(`[${action.id}] Final workingDir: ${workingDir}`);
+  console.log(`[${action.id}] Checking if workingDir exists...`);
+
+  // Verify working directory exists
+  if (!fs.existsSync(workingDir)) {
+    console.error(`[${action.id}] Working directory does NOT exist: ${workingDir}`);
+    vscode.window.showErrorMessage(`Working directory does not exist: ${workingDir}`);
+    return;
+  }
+
+  console.log(`[${action.id}] Working directory exists: ${workingDir}`);
 
   try {
     if (showNotification) {
       vscode.window.showInformationMessage(`Executing: ${action.label}`);
     }
 
-    console.log(`[${action.id}] Executing command: ${finalCommand}`);
-    console.log(`[${action.id}] Working directory: ${workingDir}`);
-
-    // Execute command in background
+    // Execute command in background with explicit shell and environment
     const { stdout, stderr } = await execAsync(finalCommand, {
       cwd: workingDir,
-      timeout: timeout
+      timeout: timeout,
+      shell: process.env.SHELL || '/bin/bash',
+      env: { ...process.env }
     });
 
     // Log output to console

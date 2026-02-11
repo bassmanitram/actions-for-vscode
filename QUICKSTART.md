@@ -1,25 +1,42 @@
 # Quick Start Guide
 
-## 1. Install Dependencies
+## Installation
+
+### Option 1: Quick Install (Recommended)
 
 ```bash
-cd /home/jbartle9/tmp/actions-for-vscode
+git clone https://github.com/bassmanitram/actions-for-vscode.git
+cd actions-for-vscode
+./install.sh
+```
+
+The script handles everything: dependencies, compilation, packaging, and installation.
+
+### Option 2: NPM Script
+
+```bash
+git clone https://github.com/bassmanitram/actions-for-vscode.git
+cd actions-for-vscode
+npm run install-extension
+```
+
+### Option 3: Manual Install
+
+```bash
+git clone https://github.com/bassmanitram/actions-for-vscode.git
+cd actions-for-vscode
 npm install
-```
-
-## 2. Compile TypeScript
-
-```bash
 npm run compile
+npm run package
+code --install-extension $(ls -t *.vsix | head -n1)
 ```
 
-## 3. Test the Extension
+## After Installation
 
-Press `F5` in VS Code to launch the Extension Development Host.
+1. **Reload VS Code**: Press `Cmd/Ctrl+Shift+P` → "Developer: Reload Window"
+2. **Configure Actions**: Follow the configuration steps below
 
-## 4. Configure Your First Action
-
-In the Extension Development Host window:
+## Configure Your First Action
 
 1. Open Settings: `Cmd/Ctrl + ,`
 2. Search for "Actions For VSCode"
@@ -40,11 +57,11 @@ In the Extension Development Host window:
 }
 ```
 
-## 5. Test Your Action
+## Test Your Action
 
-1. Open any folder in the Extension Development Host
+1. Open any folder in VS Code
 2. Right-click on a file in Explorer
-3. Select "Custom Actions..."
+3. Select "Actions For VSCode..."
 4. Choose "Open Origin"
 
 ## Adding More Actions
@@ -64,6 +81,7 @@ Simply add more objects to the `actions` array:
       "id": "gitLog",
       "label": "Git Log",
       "command": "git log --oneline -n 20 {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer", "scm"],
       "showNotification": false
     },
@@ -76,6 +94,38 @@ Simply add more objects to the `actions` array:
   ]
 }
 ```
+
+## Available Placeholders
+
+- `{file}` - Full path to selected file
+- `{files}` - All selected files (quoted, space-separated)
+- `{dir}` - Directory containing the file
+- `{filename}` - Filename only (no path)
+- `{workspace}` - Workspace root directory
+
+## Working Directory
+
+Specify where commands execute with `cwd`:
+
+```json
+{
+  "id": "npmBuild",
+  "label": "NPM Build",
+  "command": "npm run build",
+  "cwd": "{workspace}",
+  "contexts": ["explorer"]
+}
+```
+
+## Development Mode
+
+For extension development:
+
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run compile`
+4. Press `F5` to open Extension Development Host
+5. Test your changes
 
 ## Debugging
 
@@ -90,11 +140,32 @@ View command execution in Developer Tools:
 **Commands not appearing?**
 - Reload window: `Cmd/Ctrl+Shift+P` → "Developer: Reload Window"
 - Check `enabled: true` in your action config
+- Verify `contexts` includes the correct context
 
 **Command fails?**
 - Test command manually in terminal first
 - Check Developer Console for error messages
 - Verify command exists in PATH
+- Check working directory is correct
+
+**Installation fails?**
+- Ensure Node.js 18+ is installed
+- Try `npm install -g @vscode/vsce` first
+- Check `code` command is in PATH
+
+## Updating the Extension
+
+```bash
+cd actions-for-vscode
+git pull
+./install.sh
+```
+
+Or:
+
+```bash
+npm run reinstall
+```
 
 ## Next Steps
 

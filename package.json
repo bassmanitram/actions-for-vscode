@@ -2,8 +2,17 @@
   "name": "actions-for-vscode",
   "displayName": "Actions For VSCode",
   "description": "Add custom actions to context menus with configurable commands.",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "publisher": "your-publisher-name",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bassmanitram/actions-for-vscode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bassmanitram/actions-for-vscode/issues"
+  },
+  "homepage": "https://github.com/bassmanitram/actions-for-vscode#readme",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -78,7 +87,7 @@
               "enabled": true
             }
           ],
-          "markdownDescription": "Array of custom actions to add to context menus.\n\n**Available placeholders:**\n- `{file}` - Full path to the selected file\n- `{files}` - All selected files (space-separated, quoted)\n- `{dir}` - Directory containing the file\n- `{filename}` - Filename without path\n\n**Example:**\n```json\n{\n  \"id\": \"gitLog\",\n  \"label\": \"Git Log\",\n  \"command\": \"git log {file}\",\n  \"cwd\": \"{dir}\",\n  \"contexts\": [\"explorer\"],\n  \"icon\": \"git-commit\"\n}\n```",
+          "markdownDescription": "Array of custom actions to add to context menus.\n\n**Available placeholders:**\n- `{path}` - Full path to selected item\n- `{file}` - Name only (no path)\n- `{files}` - All selected files (space-separated, quoted)\n- `{dir}` - Parent directory\n- `{filename}` - Alias for {file}\n- `{workspace}` - Workspace root\n\n**Example:**\n```json\n{\n  \"id\": \"gitLog\",\n  \"label\": \"Git Log\",\n  \"command\": \"git log {path}\",\n  \"cwd\": \"{dir}\",\n  \"contexts\": [\"explorer\"],\n  \"icon\": \"git-commit\"\n}\n```",
           "items": {
             "type": "object",
             "required": [
@@ -98,11 +107,11 @@
               },
               "command": {
                 "type": "string",
-                "description": "Command to execute. Use {file}, {files}, {dir}, or {filename} as placeholders."
+                "description": "Command to execute. Use {path}, {file}, {files}, {dir}, {filename}, or {workspace} as placeholders."
               },
               "cwd": {
                 "type": "string",
-                "description": "Working directory for command execution. Supports placeholders: {file}, {dir}, {workspace}. Default: {dir} or workspace root."
+                "description": "Working directory for command execution. Supports placeholders: {path}, {file}, {dir}, {workspace}. Default: for files = parent dir, for folders = the folder itself."
               },
               "contexts": {
                 "type": "array",
@@ -151,7 +160,10 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile"
+    "pretest": "npm run compile",
+    "package": "vsce package --no-yarn",
+    "install-extension": "bash install.sh",
+    "reinstall": "npm run compile && npm run package && code --install-extension $(ls -t *.vsix | head -n1)"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",

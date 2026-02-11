@@ -9,14 +9,25 @@ Add this to your VS Code `settings.json`:
   "actionsForVscode.actions": [
     {
       "id": "openOrigin",
-      "label": "Open Origin",
+      "label": "Open Git Origin",
       "command": "G",
-      "contexts": ["explorer"],
+      "contexts": ["explorer", "scm"],
       "icon": "link-external"
     }
   ]
 }
 ```
+
+## Placeholder Reference
+
+| Placeholder | Files | Folders | Description |
+|-------------|-------|---------|-------------|
+| `{path}` | `/home/user/file.txt` | `/home/user/folder` | Full path |
+| `{file}` | `file.txt` | `folder` | Name only |
+| `{dir}` | `/home/user` | `/home/user` | Parent directory |
+| `{filename}` | `file.txt` | `folder` | Alias for `{file}` |
+| `{workspace}` | `/workspace/root` | `/workspace/root` | Workspace root |
+| `{files}` | `"file1.txt" "file2.txt"` | - | Multiple files |
 
 ## Common Examples
 
@@ -28,7 +39,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "gitLog",
       "label": "Git Log (last 20)",
-      "command": "git log --oneline -n 20 {file}",
+      "command": "git log --oneline -n 20 {path}",
       "cwd": "{dir}",
       "contexts": ["explorer", "scm"],
       "icon": "git-commit",
@@ -37,7 +48,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "gitBlame",
       "label": "Git Blame",
-      "command": "git blame {file}",
+      "command": "git blame {path}",
       "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "person",
@@ -46,7 +57,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "gitDiff",
       "label": "Git Diff",
-      "command": "git diff {file}",
+      "command": "git diff {path}",
       "cwd": "{dir}",
       "contexts": ["explorer", "scm"],
       "icon": "diff"
@@ -71,22 +82,21 @@ Add this to your VS Code `settings.json`:
     {
       "id": "copyPath",
       "label": "Copy Full Path",
-      "command": "echo -n {file} | xclip -selection clipboard",
+      "command": "echo -n {path} | xclip -selection clipboard",
       "contexts": ["explorer", "editor"],
       "icon": "clippy"
     },
     {
       "id": "makeExecutable",
       "label": "Make Executable",
-      "command": "chmod +x {file}",
-      "cwd": "{dir}",
+      "command": "chmod +x {path}",
       "contexts": ["explorer"],
       "icon": "file-binary"
     },
     {
       "id": "duplicateFile",
       "label": "Duplicate File",
-      "command": "cp {file} {file}.copy",
+      "command": "cp {path} {path}.copy",
       "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "files"
@@ -94,7 +104,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "showFileInfo",
       "label": "File Info",
-      "command": "stat {file} | zenity --text-info --title='File Info'",
+      "command": "stat {path} | zenity --text-info --title='File Info: {file}'",
       "contexts": ["explorer"],
       "icon": "info"
     }
@@ -135,7 +145,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "openInVim",
       "label": "Open in Vim",
-      "command": "gnome-terminal -- vim {file}",
+      "command": "gnome-terminal -- vim {path}",
       "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "edit"
@@ -167,7 +177,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "compressToZip",
       "label": "Compress to ZIP",
-      "command": "zip -r {filename}.zip {file}",
+      "command": "zip -r {file}.zip {file}",
       "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "archive"
@@ -175,7 +185,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "compressToTarGz",
       "label": "Compress to tar.gz",
-      "command": "tar -czf {filename}.tar.gz {file}",
+      "command": "tar -czf {file}.tar.gz {file}",
       "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "package"
@@ -183,7 +193,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "extract",
       "label": "Extract Archive",
-      "command": "aunpack {file}",
+      "command": "aunpack {path}",
       "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "file-zip"
@@ -200,7 +210,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "runPytest",
       "label": "Run pytest",
-      "command": "pytest {file}",
+      "command": "pytest {path}",
       "cwd": "{workspace}",
       "contexts": ["explorer"],
       "icon": "beaker"
@@ -208,7 +218,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "formatPython",
       "label": "Format with Black",
-      "command": "black {file}",
+      "command": "black {path}",
       "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "sparkle"
@@ -216,7 +226,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "eslintFix",
       "label": "ESLint Fix",
-      "command": "eslint --fix {file}",
+      "command": "eslint --fix {path}",
       "cwd": "{workspace}",
       "contexts": ["explorer"],
       "icon": "wrench"
@@ -249,7 +259,7 @@ Add this to your VS Code `settings.json`:
     {
       "id": "runCustomAnalysis",
       "label": "Run Analysis Script",
-      "command": "/home/user/scripts/analyze.sh {file}",
+      "command": "/home/user/scripts/analyze.sh {path}",
       "cwd": "{workspace}",
       "contexts": ["explorer"],
       "icon": "graph"
@@ -274,7 +284,7 @@ Add this to your VS Code `settings.json`:
 {
   "id": "runInTemp",
   "label": "Run in /tmp",
-  "command": "my-command {file}",
+  "command": "my-command {path}",
   "cwd": "/tmp"
 }
 ```
@@ -297,7 +307,7 @@ Add this to your VS Code `settings.json`:
 {
   "id": "silentBackup",
   "label": "Backup File",
-  "command": "cp {file} {file}.bak",
+  "command": "cp {path} {path}.bak",
   "cwd": "{dir}",
   "showNotification": false
 }
@@ -309,7 +319,7 @@ Add this to your VS Code `settings.json`:
 {
   "id": "universalAction",
   "label": "My Tool",
-  "command": "mytool {file}",
+  "command": "mytool {path}",
   "cwd": "{dir}",
   "contexts": ["explorer", "scm", "editor"]
 }
@@ -321,7 +331,7 @@ Add this to your VS Code `settings.json`:
 {
   "id": "dangerousOperation",
   "label": "Dangerous Operation",
-  "command": "rm -rf {file}",
+  "command": "rm -rf {path}",
   "enabled": false
 }
 ```
@@ -358,13 +368,48 @@ The `cwd` property controls where commands execute:
 }
 ```
 
+## Common Placeholder Patterns
+
+### Full Path to Item (Most Common)
+```json
+{
+  "command": "my-command {path}"
+}
+```
+Works for both files and folders.
+
+### File Name Only
+```json
+{
+  "command": "echo Processing: {file}"
+}
+```
+Useful for display or when you're already in the right directory.
+
+### Multiple Files
+```json
+{
+  "command": "my-command {files}"
+}
+```
+When you select multiple items in Explorer.
+
+### Mix and Match
+```json
+{
+  "command": "echo 'Processing {file} from {dir}' && process-tool {path}"
+}
+```
+
 ## Tips
 
 1. **Test commands in terminal first** before adding them to ensure they work
-2. **Use absolute paths** for custom scripts to avoid PATH issues
-3. **Set correct `cwd`** - use `{dir}` for file operations, `{workspace}` for project commands
-4. **Check console logs** (`Help` → `Toggle Developer Tools`) for debugging
-5. **Start simple** with one action, then add more as needed
+2. **Use `{path}` for most commands** - it works for both files and folders
+3. **Use `{file}` for display purposes** - when you just need the name
+4. **Set correct `cwd`** - use `{dir}` for file operations, `{workspace}` for project commands
+5. **Check console logs** (`Help` → `Toggle Developer Tools`) for debugging
+6. **Workspace settings override user settings** - check both if things don't work as expected
+7. **Start simple** with one action, then add more as needed
 
 ## Popular Icons
 
