@@ -29,6 +29,7 @@ Add this to your VS Code `settings.json`:
       "id": "gitLog",
       "label": "Git Log (last 20)",
       "command": "git log --oneline -n 20 {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer", "scm"],
       "icon": "git-commit",
       "showNotification": false
@@ -37,6 +38,7 @@ Add this to your VS Code `settings.json`:
       "id": "gitBlame",
       "label": "Git Blame",
       "command": "git blame {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "person",
       "showNotification": false
@@ -45,8 +47,17 @@ Add this to your VS Code `settings.json`:
       "id": "gitDiff",
       "label": "Git Diff",
       "command": "git diff {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer", "scm"],
       "icon": "diff"
+    },
+    {
+      "id": "gitStatus",
+      "label": "Git Status",
+      "command": "git status",
+      "cwd": "{workspace}",
+      "contexts": ["explorer"],
+      "icon": "git-branch"
     }
   ]
 }
@@ -68,6 +79,7 @@ Add this to your VS Code `settings.json`:
       "id": "makeExecutable",
       "label": "Make Executable",
       "command": "chmod +x {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "file-binary"
     },
@@ -75,6 +87,7 @@ Add this to your VS Code `settings.json`:
       "id": "duplicateFile",
       "label": "Duplicate File",
       "command": "cp {file} {file}.copy",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "files"
     },
@@ -97,14 +110,16 @@ Add this to your VS Code `settings.json`:
     {
       "id": "openTerminalHere",
       "label": "Open Terminal Here",
-      "command": "gnome-terminal --working-directory={dir}",
+      "command": "gnome-terminal",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "terminal"
     },
     {
       "id": "openTerminalAsRoot",
       "label": "Open Terminal as Root",
-      "command": "gnome-terminal --working-directory={dir} -- sudo -i",
+      "command": "gnome-terminal -- sudo -i",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "terminal-bash"
     }
@@ -121,6 +136,7 @@ Add this to your VS Code `settings.json`:
       "id": "openInVim",
       "label": "Open in Vim",
       "command": "gnome-terminal -- vim {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "edit"
     },
@@ -128,6 +144,7 @@ Add this to your VS Code `settings.json`:
       "id": "compareFiles",
       "label": "Compare with Meld",
       "command": "meld {files}",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "diff"
     },
@@ -151,6 +168,7 @@ Add this to your VS Code `settings.json`:
       "id": "compressToZip",
       "label": "Compress to ZIP",
       "command": "zip -r {filename}.zip {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "archive"
     },
@@ -158,6 +176,7 @@ Add this to your VS Code `settings.json`:
       "id": "compressToTarGz",
       "label": "Compress to tar.gz",
       "command": "tar -czf {filename}.tar.gz {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "package"
     },
@@ -165,6 +184,7 @@ Add this to your VS Code `settings.json`:
       "id": "extract",
       "label": "Extract Archive",
       "command": "aunpack {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "file-zip"
     }
@@ -181,6 +201,7 @@ Add this to your VS Code `settings.json`:
       "id": "runPytest",
       "label": "Run pytest",
       "command": "pytest {file}",
+      "cwd": "{workspace}",
       "contexts": ["explorer"],
       "icon": "beaker"
     },
@@ -188,6 +209,7 @@ Add this to your VS Code `settings.json`:
       "id": "formatPython",
       "label": "Format with Black",
       "command": "black {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "sparkle"
     },
@@ -195,15 +217,25 @@ Add this to your VS Code `settings.json`:
       "id": "eslintFix",
       "label": "ESLint Fix",
       "command": "eslint --fix {file}",
+      "cwd": "{workspace}",
       "contexts": ["explorer"],
       "icon": "wrench"
     },
     {
       "id": "buildDocker",
       "label": "Build Docker Image",
-      "command": "docker build -t myapp {dir}",
+      "command": "docker build -t myapp .",
+      "cwd": "{workspace}",
       "contexts": ["explorer"],
       "icon": "server"
+    },
+    {
+      "id": "npmBuild",
+      "label": "NPM Build",
+      "command": "npm run build",
+      "cwd": "{workspace}",
+      "contexts": ["explorer"],
+      "icon": "tools"
     }
   ]
 }
@@ -218,6 +250,7 @@ Add this to your VS Code `settings.json`:
       "id": "runCustomAnalysis",
       "label": "Run Analysis Script",
       "command": "/home/user/scripts/analyze.sh {file}",
+      "cwd": "{workspace}",
       "contexts": ["explorer"],
       "icon": "graph"
     },
@@ -225,6 +258,7 @@ Add this to your VS Code `settings.json`:
       "id": "processMultiple",
       "label": "Batch Process",
       "command": "/home/user/scripts/batch_process.sh {files}",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "layers"
     }
@@ -234,6 +268,29 @@ Add this to your VS Code `settings.json`:
 
 ## Advanced Configuration
 
+### Using Custom Working Directory
+
+```json
+{
+  "id": "runInTemp",
+  "label": "Run in /tmp",
+  "command": "my-command {file}",
+  "cwd": "/tmp"
+}
+```
+
+### Workspace Root Commands
+
+```json
+{
+  "id": "runTests",
+  "label": "Run All Tests",
+  "command": "npm test",
+  "cwd": "{workspace}",
+  "showNotification": true
+}
+```
+
 ### Disable Notifications for Quiet Commands
 
 ```json
@@ -241,6 +298,7 @@ Add this to your VS Code `settings.json`:
   "id": "silentBackup",
   "label": "Backup File",
   "command": "cp {file} {file}.bak",
+  "cwd": "{dir}",
   "showNotification": false
 }
 ```
@@ -252,6 +310,7 @@ Add this to your VS Code `settings.json`:
   "id": "universalAction",
   "label": "My Tool",
   "command": "mytool {file}",
+  "cwd": "{dir}",
   "contexts": ["explorer", "scm", "editor"]
 }
 ```
@@ -267,11 +326,43 @@ Add this to your VS Code `settings.json`:
 }
 ```
 
+## Working Directory Examples
+
+The `cwd` property controls where commands execute:
+
+```json
+{
+  "actionsForVscode.actions": [
+    {
+      "id": "gitStatusHere",
+      "label": "Git Status (current dir)",
+      "command": "git status",
+      "cwd": "{dir}",
+      "icon": "git-branch"
+    },
+    {
+      "id": "gitStatusWorkspace",
+      "label": "Git Status (workspace root)",
+      "command": "git status",
+      "cwd": "{workspace}",
+      "icon": "git-branch"
+    },
+    {
+      "id": "lsHere",
+      "label": "List Files",
+      "command": "ls -la > /tmp/files.txt",
+      "cwd": "{dir}",
+      "icon": "folder"
+    }
+  ]
+}
+```
+
 ## Tips
 
 1. **Test commands in terminal first** before adding them to ensure they work
 2. **Use absolute paths** for custom scripts to avoid PATH issues
-3. **Quote placeholders** if you include them manually (extension auto-quotes them)
+3. **Set correct `cwd`** - use `{dir}` for file operations, `{workspace}` for project commands
 4. **Check console logs** (`Help` → `Toggle Developer Tools`) for debugging
 5. **Start simple** with one action, then add more as needed
 
@@ -289,5 +380,6 @@ Common VS Code icon IDs you can use:
 - `symbol-class`, `symbol-method`, `symbol-file`
 - `link`, `link-external`
 - `trash`, `close`, `check`
+- `tools`
 
 Full list: [VS Code Icon Reference](https://code.visualstudio.com/api/references/icons-in-labels#icon-listing)

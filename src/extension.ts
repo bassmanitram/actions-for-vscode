@@ -8,6 +8,7 @@ interface CustomAction {
   id: string;
   label: string;
   command: string;
+  cwd?: string;
   contexts?: string[];
   icon?: string;
   showNotification?: boolean;
@@ -183,6 +184,10 @@ async function executeAction(
   const showNotification = action.showNotification !== false;
   const filePath = uri.fsPath;
   
+  // Calculate directory and workspace paths
+  const dir = uri.fsPath.substring(0, uri.fsPath.lastIndexOf('/'));
+  const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || dir;
+  
   // Build final command - replace placeholders
   let finalCommand = action.command;
   
@@ -204,21 +209,39 @@ async function executeAction(
   }
 
   // Replace {dir} with directory of file
-  const dir = uri.fsPath.substring(0, uri.fsPath.lastIndexOf('/'));
   finalCommand = finalCommand.replace(/{dir}/g, `"${dir}"`);
 
   // Replace {filename} with just the filename (no path)
   const filename = uri.fsPath.substring(uri.fsPath.lastIndexOf('/') + 1);
   finalCommand = finalCommand.replace(/{filename}/g, `"${filename}"`);
 
+  // Determine working directory
+  let workingDir = workspaceRoot;
+  if (action.cwd) {
+    // Replace placeholders in cwd
+    workingDir = action.cwd
+      .replace(/{file}/g, filePath)
+      .replace(/{dir}/g, dir)
+      .replace(/{workspace}/g, workspaceRoot);
+    
+    // Remove quotes if present (we don't need them for cwd)
+    workingDir = workingDir.replace(/^["']|["']$/g, '');
+  } else {
+    // Default: use directory of the file
+    workingDir = dir;
+  }
+
   try {
     if (showNotification) {
       vscode.window.showInformationMessage(`Executing: ${action.label}`);
     }
 
+    console.log(`[${action.id}] Executing command: ${finalCommand}`);
+    console.log(`[${action.id}] Working directory: ${workingDir}`);
+
     // Execute command in background
     const { stdout, stderr } = await execAsync(finalCommand, {
-      cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || dir,
+      cwd: workingDir,
       timeout: timeout
     });
 

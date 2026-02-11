@@ -78,7 +78,7 @@
               "enabled": true
             }
           ],
-          "markdownDescription": "Array of custom actions to add to context menus.\n\n**Available placeholders:**\n- `{file}` - Full path to the selected file\n- `{files}` - All selected files (space-separated, quoted)\n- `{dir}` - Directory containing the file\n- `{filename}` - Filename without path\n\n**Example:**\n```json\n{\n  \"id\": \"gitLog\",\n  \"label\": \"Git Log\",\n  \"command\": \"git log {file}\",\n  \"contexts\": [\"explorer\"],\n  \"icon\": \"git-commit\"\n}\n```",
+          "markdownDescription": "Array of custom actions to add to context menus.\n\n**Available placeholders:**\n- `{file}` - Full path to the selected file\n- `{files}` - All selected files (space-separated, quoted)\n- `{dir}` - Directory containing the file\n- `{filename}` - Filename without path\n\n**Example:**\n```json\n{\n  \"id\": \"gitLog\",\n  \"label\": \"Git Log\",\n  \"command\": \"git log {file}\",\n  \"cwd\": \"{dir}\",\n  \"contexts\": [\"explorer\"],\n  \"icon\": \"git-commit\"\n}\n```",
           "items": {
             "type": "object",
             "required": [
@@ -99,6 +99,10 @@
               "command": {
                 "type": "string",
                 "description": "Command to execute. Use {file}, {files}, {dir}, or {filename} as placeholders."
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Working directory for command execution. Supports placeholders: {file}, {dir}, {workspace}. Default: {dir} or workspace root."
               },
               "contexts": {
                 "type": "array",

@@ -1,0 +1,109 @@
+name: Build and Release VS Code Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: npm install
+          
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          # Get version from tag (e.g., v0.1.0 -> 0.1.0)
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          echo "TAG_VERSION=$TAG_VERSION" >> $GITHUB_OUTPUT
+          echo "Tag version: $TAG_VERSION"
+          
+      - name: Verify package.json version matches tag
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          EXPECTED_VERSION="${{ steps.get_version.outputs.TAG_VERSION }}"
+          
+          echo "package.json version: $PACKAGE_VERSION"
+          echo "Expected version: $EXPECTED_VERSION"
+          
+          if [ "$PACKAGE_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "ERROR: Version mismatch!"
+            echo "package.json has version=$PACKAGE_VERSION"
+            echo "But tag is v$EXPECTED_VERSION"
+            exit 1
+          fi
+          
+          echo "✓ Version check passed"
+          
+      - name: Compile TypeScript
+        run: npm run compile
+        
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
+        
+      - name: Package extension
+        run: vsce package --no-yarn
+        
+      - name: Verify package was created
+        run: |
+          VERSION="${{ steps.get_version.outputs.TAG_VERSION }}"
+          PACKAGE_FILE="actions-for-vscode-${VERSION}.vsix"
+          if [ ! -f "$PACKAGE_FILE" ]; then
+            echo "ERROR: Package file not found: $PACKAGE_FILE"
+            ls -la *.vsix || echo "No .vsix files found"
+            exit 1
+          fi
+          echo "Package created successfully: $PACKAGE_FILE"
+          
+      - name: Extract release notes
+        id: release_notes
+        run: |
+          VERSION="${{ steps.get_version.outputs.TAG_VERSION }}"
+          
+          if [ -f "CHANGELOG.md" ]; then
+            # Try to extract version-specific notes
+            awk "/## \[${VERSION}\]/,/## \[[0-9]/" CHANGELOG.md | head -n -1 > /tmp/release_notes.txt
+            
+            # If empty, try without brackets
+            if [ ! -s /tmp/release_notes.txt ]; then
+              awk "/## ${VERSION}/,/## [0-9]/" CHANGELOG.md | head -n -1 > /tmp/release_notes.txt
+            fi
+          fi
+          
+          # If still empty, use a default message
+          if [ ! -s /tmp/release_notes.txt ]; then
+            echo "Release ${VERSION}" > /tmp/release_notes.txt
+            echo "" >> /tmp/release_notes.txt
+            echo "See [CHANGELOG.md](CHANGELOG.md) for details." >> /tmp/release_notes.txt
+          fi
+          
+          echo "Release notes:"
+          cat /tmp/release_notes.txt
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: actions-for-vscode-${{ steps.get_version.outputs.TAG_VERSION }}.vsix
+          body_path: /tmp/release_notes.txt
+          draft: false
+          prerelease: ${{ contains(steps.get_version.outputs.TAG_VERSION, 'pre') || contains(steps.get_version.outputs.TAG_VERSION, 'rc') || contains(steps.get_version.outputs.TAG_VERSION, 'alpha') || contains(steps.get_version.outputs.TAG_VERSION, 'beta') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Upload package as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-extension
+          path: actions-for-vscode-${{ steps.get_version.outputs.TAG_VERSION }}.vsix
+          retention-days: 90

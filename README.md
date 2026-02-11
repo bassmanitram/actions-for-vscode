@@ -7,7 +7,8 @@ A flexible VS Code extension that allows you to add custom commands to context m
 - **Multiple Custom Actions**: Define unlimited custom actions in settings
 - **Context-Aware**: Show actions in Explorer, Source Control, or Editor contexts
 - **Background Execution**: Commands run silently in the background
-- **Flexible Placeholders**: Use `{file}`, `{files}`, `{dir}`, `{filename}` in commands
+- **Working Directory Control**: Specify custom working directory for each action
+- **Flexible Placeholders**: Use `{file}`, `{files}`, `{dir}`, `{filename}`, `{workspace}` in commands
 - **Rich Configuration**: Enable/disable actions, customize notifications, add icons
 - **Quick Access**: Right-click menu shows "Actions For VSCode..." picker
 
@@ -48,6 +49,7 @@ Open VS Code Settings and search for "Actions For VSCode" or edit `settings.json
       "id": "gitLog",
       "label": "Git Log",
       "command": "git log --oneline -n 20 {file}",
+      "cwd": "{dir}",
       "contexts": ["explorer", "scm"],
       "icon": "git-commit",
       "showNotification": false
@@ -55,7 +57,8 @@ Open VS Code Settings and search for "Actions For VSCode" or edit `settings.json
     {
       "id": "openInTerminal",
       "label": "Open Terminal Here",
-      "command": "gnome-terminal --working-directory={dir}",
+      "command": "gnome-terminal",
+      "cwd": "{dir}",
       "contexts": ["explorer"],
       "icon": "terminal"
     },
@@ -86,6 +89,7 @@ Each action supports the following properties:
 | `id` | string | ✓ | - | Unique identifier (alphanumeric, hyphens, underscores) |
 | `label` | string | ✓ | - | Text shown in the menu |
 | `command` | string | ✓ | - | Command to execute |
+| `cwd` | string | | `{dir}` | Working directory (supports placeholders) |
 | `contexts` | string[] | | `["explorer"]` | Where to show: `explorer`, `scm`, `editor` |
 | `icon` | string | | - | VS Code icon ID (see [icon reference](https://code.visualstudio.com/api/references/icons-in-labels)) |
 | `showNotification` | boolean | | `true` | Show success/error notifications |
@@ -93,7 +97,7 @@ Each action supports the following properties:
 
 ## Command Placeholders
 
-Use these placeholders in your commands:
+Use these placeholders in your commands and working directory:
 
 - **`{file}`** - Full path to the selected file
   - Example: `/home/user/project/src/main.ts`
@@ -103,6 +107,28 @@ Use these placeholders in your commands:
   - Example: `/home/user/project/src`
 - **`{filename}`** - Filename without path
   - Example: `main.ts`
+- **`{workspace}`** - Workspace root directory
+  - Example: `/home/user/project`
+
+### Working Directory (`cwd`)
+
+The `cwd` property specifies where the command executes. It supports the same placeholders:
+
+```json
+{
+  "id": "gitStatus",
+  "label": "Git Status",
+  "command": "git status",
+  "cwd": "{dir}"
+}
+```
+
+**Default behavior**: If `cwd` is not specified, commands execute in the file's directory (`{dir}`).
+
+**Examples**:
+- `"cwd": "{dir}"` - Execute in file's directory
+- `"cwd": "{workspace}"` - Execute in workspace root
+- `"cwd": "/tmp"` - Execute in specific directory
 
 ### Auto-append Behavior
 
@@ -153,9 +179,22 @@ Value in milliseconds. Default: 30000 (30 seconds).
 {
   "id": "gitBlame",
   "label": "Git Blame",
-  "command": "git blame {file} | less",
+  "command": "git blame {file}",
+  "cwd": "{dir}",
   "contexts": ["explorer"],
   "icon": "git-commit"
+}
+```
+
+### Build in Workspace Root
+```json
+{
+  "id": "npmBuild",
+  "label": "NPM Build",
+  "command": "npm run build",
+  "cwd": "{workspace}",
+  "contexts": ["explorer"],
+  "icon": "tools"
 }
 ```
 
@@ -165,6 +204,7 @@ Value in milliseconds. Default: 30000 (30 seconds).
   "id": "duplicateFile",
   "label": "Duplicate File",
   "command": "cp {file} {file}.copy",
+  "cwd": "{dir}",
   "contexts": ["explorer"],
   "icon": "files"
 }
@@ -176,6 +216,7 @@ Value in milliseconds. Default: 30000 (30 seconds).
   "id": "runCustomScript",
   "label": "Run My Script",
   "command": "/home/user/scripts/process.sh {file}",
+  "cwd": "{workspace}",
   "contexts": ["explorer"],
   "showNotification": true
 }
@@ -187,6 +228,7 @@ Value in milliseconds. Default: 30000 (30 seconds).
   "id": "compressAll",
   "label": "Compress Selected Files",
   "command": "tar -czf archive.tar.gz {files}",
+  "cwd": "{dir}",
   "contexts": ["explorer"],
   "icon": "archive"
 }
@@ -202,7 +244,7 @@ Value in milliseconds. Default: 30000 (30 seconds).
 ### Command Execution Fails
 - Check the Developer Console: `Help` → `Toggle Developer Tools` → `Console` tab
 - Verify the command exists in your system PATH
-- Test the command manually in a terminal
+- Test the command manually in a terminal from the same working directory
 - Check file path has no special characters that need escaping
 
 ### No Actions in Settings
