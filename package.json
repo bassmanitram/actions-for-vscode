@@ -69,7 +69,10 @@
               "id": "openOrigin",
               "label": "Open Origin",
               "command": "G",
-              "contexts": ["explorer", "scm"],
+              "contexts": [
+                "explorer",
+                "scm"
+              ],
               "icon": "link-external",
               "showNotification": true,
               "enabled": true
@@ -78,7 +81,11 @@
           "markdownDescription": "Array of custom actions to add to context menus.\n\n**Available placeholders:**\n- `{file}` - Full path to the selected file\n- `{files}` - All selected files (space-separated, quoted)\n- `{dir}` - Directory containing the file\n- `{filename}` - Filename without path\n\n**Example:**\n```json\n{\n  \"id\": \"gitLog\",\n  \"label\": \"Git Log\",\n  \"command\": \"git log {file}\",\n  \"contexts\": [\"explorer\"],\n  \"icon\": \"git-commit\"\n}\n```",
           "items": {
             "type": "object",
-            "required": ["id", "label", "command"],
+            "required": [
+              "id",
+              "label",
+              "command"
+            ],
             "properties": {
               "id": {
                 "type": "string",
@@ -98,9 +105,15 @@
                 "description": "Where to show this action.",
                 "items": {
                   "type": "string",
-                  "enum": ["explorer", "scm", "editor"]
+                  "enum": [
+                    "explorer",
+                    "scm",
+                    "editor"
+                  ]
                 },
-                "default": ["explorer"],
+                "default": [
+                  "explorer"
+                ],
                 "uniqueItems": true
               },
               "icon": {
@@ -139,6 +152,7 @@
   "devDependencies": {
     "@types/node": "^18.0.0",
     "@types/vscode": "^1.80.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vsce": "^2.11.0"
   }
 }
