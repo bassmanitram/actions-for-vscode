@@ -1,0 +1,144 @@
+{
+  "name": "actions-for-vscode",
+  "displayName": "Actions For VSCode",
+  "description": "Add custom actions to context menus with configurable commands.",
+  "version": "0.1.0",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "actionsForVscode.showExplorerActions",
+        "title": "Actions For VSCode..."
+      },
+      {
+        "command": "actionsForVscode.showScmActions",
+        "title": "Actions For VSCode..."
+      },
+      {
+        "command": "actionsForVscode.showEditorActions",
+        "title": "Actions For VSCode..."
+      },
+      {
+        "command": "actionsForVscode.openSettings",
+        "title": "Actions For VSCode: Open Settings"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "actionsForVscode.showExplorerActions",
+          "group": "2_workspace@1",
+          "when": "explorerResourceIsFolder || explorerResourceIsFile"
+        }
+      ],
+      "scm/resourceState/context": [
+        {
+          "command": "actionsForVscode.showScmActions",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "actionsForVscode.showEditorActions",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Actions For VSCode",
+      "properties": {
+        "actionsForVscode.useSubmenu": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show actions in a submenu (true) or directly in context menu (false)."
+        },
+        "actionsForVscode.actions": {
+          "type": "array",
+          "default": [
+            {
+              "id": "openOrigin",
+              "label": "Open Origin",
+              "command": "G",
+              "contexts": ["explorer", "scm"],
+              "icon": "link-external",
+              "showNotification": true,
+              "enabled": true
+            }
+          ],
+          "markdownDescription": "Array of custom actions to add to context menus.\n\n**Available placeholders:**\n- `{file}` - Full path to the selected file\n- `{files}` - All selected files (space-separated, quoted)\n- `{dir}` - Directory containing the file\n- `{filename}` - Filename without path\n\n**Example:**\n```json\n{\n  \"id\": \"gitLog\",\n  \"label\": \"Git Log\",\n  \"command\": \"git log {file}\",\n  \"contexts\": [\"explorer\"],\n  \"icon\": \"git-commit\"\n}\n```",
+          "items": {
+            "type": "object",
+            "required": ["id", "label", "command"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier (alphanumeric, no spaces).",
+                "pattern": "^[a-zA-Z0-9_-]+$"
+              },
+              "label": {
+                "type": "string",
+                "description": "Text displayed in the context menu."
+              },
+              "command": {
+                "type": "string",
+                "description": "Command to execute. Use {file}, {files}, {dir}, or {filename} as placeholders."
+              },
+              "contexts": {
+                "type": "array",
+                "description": "Where to show this action.",
+                "items": {
+                  "type": "string",
+                  "enum": ["explorer", "scm", "editor"]
+                },
+                "default": ["explorer"],
+                "uniqueItems": true
+              },
+              "icon": {
+                "type": "string",
+                "description": "VS Code icon ID (e.g., 'file', 'folder', 'symbol-class', 'gear'). See: https://code.visualstudio.com/api/references/icons-in-labels"
+              },
+              "showNotification": {
+                "type": "boolean",
+                "description": "Show notification when command executes.",
+                "default": true
+              },
+              "enabled": {
+                "type": "boolean",
+                "description": "Enable or disable this action.",
+                "default": true
+              }
+            }
+          }
+        },
+        "actionsForVscode.commandTimeout": {
+          "type": "number",
+          "default": 30000,
+          "description": "Timeout for command execution in milliseconds.",
+          "minimum": 1000,
+          "maximum": 300000
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.0.0"
+  }
+}

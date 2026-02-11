@@ -1,0 +1,86 @@
+// Sample VS Code settings for Actions For VSCode
+// Copy these into your settings.json file
+
+{
+  // Define your custom actions
+  "actionsForVscode.actions": [
+    // Example 1: Simple command with auto-append
+    {
+      "id": "openOrigin",
+      "label": "Open Origin",
+      "command": "G",
+      "contexts": ["explorer", "scm"],
+      "icon": "link-external",
+      "showNotification": true,
+      "enabled": true
+    },
+
+    // Example 2: Git log with explicit placeholder
+    {
+      "id": "gitLog",
+      "label": "Git Log (last 20)",
+      "command": "git log --oneline -n 20 {file}",
+      "contexts": ["explorer", "scm"],
+      "icon": "git-commit",
+      "showNotification": false
+    },
+
+    // Example 3: Open terminal in directory
+    {
+      "id": "openTerminal",
+      "label": "Open Terminal Here",
+      "command": "gnome-terminal --working-directory={dir}",
+      "contexts": ["explorer"],
+      "icon": "terminal"
+    },
+
+    // Example 4: Copy path to clipboard
+    {
+      "id": "copyPath",
+      "label": "Copy Full Path",
+      "command": "echo -n {file} | xclip -selection clipboard",
+      "contexts": ["explorer", "editor"],
+      "icon": "clippy"
+    },
+
+    // Example 5: Make file executable
+    {
+      "id": "makeExecutable",
+      "label": "Make Executable",
+      "command": "chmod +x {file}",
+      "contexts": ["explorer"],
+      "icon": "file-binary"
+    },
+
+    // Example 6: Run custom script
+    {
+      "id": "customAnalysis",
+      "label": "Run Analysis",
+      "command": "/home/user/scripts/analyze.sh {file}",
+      "contexts": ["explorer"],
+      "icon": "graph",
+      "showNotification": true
+    },
+
+    // Example 7: Batch operation on multiple files
+    {
+      "id": "batchCompress",
+      "label": "Compress Selected",
+      "command": "tar -czf archive.tar.gz {files}",
+      "contexts": ["explorer"],
+      "icon": "package"
+    },
+
+    // Example 8: Disabled action (for reference)
+    {
+      "id": "dangerousDelete",
+      "label": "Force Delete",
+      "command": "rm -rf {file}",
+      "contexts": ["explorer"],
+      "enabled": false
+    }
+  ],
+
+  // Command execution timeout (in milliseconds)
+  "actionsForVscode.commandTimeout": 30000
+}
