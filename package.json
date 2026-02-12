@@ -3,7 +3,7 @@
   "displayName": "Actions For VSCode",
   "description": "Add custom actions to context menus with configurable commands.",
   "version": "0.4.0",
-  "publisher": "your-publisher-name",
+  "publisher": "bassmanitram",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -174,5 +174,20 @@
     "@types/vscode": "^1.80.0",
     "typescript": "^5.0.0",
     "vsce": "^2.11.0"
+  },
+  "keywords": [
+    "actions",
+    "context-menu",
+    "commands",
+    "custom-commands",
+    "explorer",
+    "automation",
+    "scripts",
+    "tools",
+    "productivity"
+  ],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
   }
 }

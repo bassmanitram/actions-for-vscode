@@ -17,9 +17,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
           
       - name: Install dependencies
-        run: npm install
+        run: npm ci
           
       - name: Extract version from tag
         id: get_version
@@ -65,6 +66,19 @@ jobs:
             exit 1
           fi
           echo "Package created successfully: $PACKAGE_FILE"
+          
+      - name: Publish to VS Code Marketplace
+        if: ${{ !contains(steps.get_version.outputs.TAG_VERSION, 'pre') && !contains(steps.get_version.outputs.TAG_VERSION, 'rc') && !contains(steps.get_version.outputs.TAG_VERSION, 'alpha') && !contains(steps.get_version.outputs.TAG_VERSION, 'beta') }}
+        run: npx vsce publish --packagePath actions-for-vscode-${{ steps.get_version.outputs.TAG_VERSION }}.vsix
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          
+      - name: Publish to Open VSX Registry
+        if: ${{ !contains(steps.get_version.outputs.TAG_VERSION, 'pre') && !contains(steps.get_version.outputs.TAG_VERSION, 'rc') && !contains(steps.get_version.outputs.TAG_VERSION, 'alpha') && !contains(steps.get_version.outputs.TAG_VERSION, 'beta') }}
+        run: npx ovsx publish actions-for-vscode-${{ steps.get_version.outputs.TAG_VERSION }}.vsix
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        continue-on-error: true
           
       - name: Extract release notes
         id: release_notes
