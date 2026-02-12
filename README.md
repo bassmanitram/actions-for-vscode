@@ -14,38 +14,52 @@ A VS Code extension that adds custom commands to context menus in the Explorer, 
 
 ## Installation
 
-### Quick Install
+### From VS Code Marketplace
+
+1. Open VS Code
+2. Go to Extensions view (`Cmd/Ctrl+Shift+X`)
+3. Search for "Actions For VSCode"
+4. Click Install
+
+Or install from command line:
+
+```bash
+code --install-extension bassmanitram.actions-for-vscode
+```
+
+### From GitHub Releases
+
+Download the latest `.vsix` file from [Releases](https://github.com/bassmanitram/actions-for-vscode/releases) and install:
+
+```bash
+code --install-extension actions-for-vscode-X.Y.Z.vsix
+```
+
+### From Source (Development)
 
 ```bash
 git clone https://github.com/bassmanitram/actions-for-vscode.git
 cd actions-for-vscode
-./install.sh
-```
-
-The script will install dependencies, compile TypeScript, package the extension, and install it into VS Code.
-
-### Manual Install
-
-```bash
 npm install
 npm run compile
 npm run package
 code --install-extension $(ls -t *.vsix | head -n1)
 ```
 
-### NPM Scripts
+## Quick Start
 
-- `npm run compile` - Compile TypeScript
-- `npm run package` - Create .vsix package
-- `npm run reinstall` - Compile, package, and install
-- `npm run watch` - Watch mode for development
+After installation:
 
-### Development Mode
+1. Open VS Code Settings (`Cmd/Ctrl+,`)
+2. Search for "Actions For VSCode"
+3. Click the link: "Open Visual Settings Manager"
+4. Click "+ Add New Action" to create your first action
 
-1. Clone the repository
-2. Run `npm install`
-3. Run `npm run compile`
-4. Press `F5` to open Extension Development Host
+Or configure via JSON:
+
+1. Open Command Palette (`Cmd/Ctrl+Shift+P`)
+2. Type "Actions For VSCode: Open Settings"
+3. Add your actions to the JSON configuration
 
 ## Configuration
 
@@ -315,22 +329,25 @@ Value in milliseconds. Default: 30000 (30 seconds).
 
 ### Setup
 ```bash
+git clone https://github.com/bassmanitram/actions-for-vscode.git
+cd actions-for-vscode
 npm install
-```
-
-### Compile
-```bash
 npm run compile
 ```
 
-### Watch Mode
+### Build and Test
 ```bash
-npm run watch
-```
+# Compile TypeScript
+npm run compile
 
-### Package
-```bash
+# Watch mode for development
+npm run watch
+
+# Package extension
 npm run package
+
+# Install locally for testing
+code --install-extension $(ls -t *.vsix | head -n1)
 ```
 
 ### Debug
@@ -344,12 +361,19 @@ Press `F5` in VS Code to launch Extension Development Host.
 ## Requirements
 
 - VS Code 1.80.0 or higher
-- Node.js 18+ (20+ recommended for packaging)
+- Node.js 18+ (for development)
 - Commands must be available in system PATH
 
 ## Security
 
 This extension executes system commands based on user configuration. Only configure commands you trust and understand.
+
+## Links
+
+- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=bassmanitram.actions-for-vscode)
+- [GitHub Repository](https://github.com/bassmanitram/actions-for-vscode)
+- [Issue Tracker](https://github.com/bassmanitram/actions-for-vscode/issues)
+- [Changelog](https://github.com/bassmanitram/actions-for-vscode/blob/main/CHANGELOG.md)
 
 ## Related Projects
 

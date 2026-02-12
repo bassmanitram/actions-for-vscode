@@ -2,25 +2,28 @@
 
 ## Installation
 
-### Option 1: Quick Install
+### From VS Code Marketplace (Recommended)
 
+**Option 1: Via Extensions View**
+1. Open VS Code
+2. Click Extensions icon (`Cmd/Ctrl+Shift+X`)
+3. Search for "Actions For VSCode"
+4. Click Install
+
+**Option 2: Command Line**
 ```bash
-git clone https://github.com/bassmanitram/actions-for-vscode.git
-cd actions-for-vscode
-./install.sh
+code --install-extension bassmanitram.actions-for-vscode
 ```
 
-The script handles dependencies, compilation, packaging, and installation.
+### From GitHub Releases
 
-### Option 2: NPM Script
+Download the latest `.vsix` from [Releases](https://github.com/bassmanitram/actions-for-vscode/releases):
 
 ```bash
-git clone https://github.com/bassmanitram/actions-for-vscode.git
-cd actions-for-vscode
-npm run install-extension
+code --install-extension actions-for-vscode-X.Y.Z.vsix
 ```
 
-### Option 3: Manual Install
+### From Source (Development)
 
 ```bash
 git clone https://github.com/bassmanitram/actions-for-vscode.git
@@ -33,12 +36,11 @@ code --install-extension $(ls -t *.vsix | head -n1)
 
 ## After Installation
 
-1. Reload VS Code: `Cmd/Ctrl+Shift+P` → "Developer: Reload Window"
-2. Configure actions using the steps below
+Reload VS Code: `Cmd/Ctrl+Shift+P` → "Developer: Reload Window"
 
 ## Configure Your First Action
 
-### Using Visual Settings Manager
+### Using Visual Settings Manager (Recommended)
 
 1. Open Command Palette: `Cmd/Ctrl+Shift+P`
 2. Type "Actions For VSCode: Manage Actions"
@@ -82,12 +84,12 @@ code --install-extension $(ls -t *.vsix | head -n1)
 
 ## Adding More Actions
 
-Using the Visual Manager:
+**Using Visual Manager:**
 - Click "+ Add New Action" to add another
 - Click "Edit" on existing actions to modify them
 - Click "Delete" to remove actions
 
-Using JSON, add more objects to the `actions` array:
+**Using JSON:**
 
 ```json
 {
@@ -139,15 +141,42 @@ Specify where commands execute with `cwd`:
 }
 ```
 
-## Development Mode
+## Common Examples
 
-For extension development:
+### Git Log
+```json
+{
+  "id": "gitLog",
+  "label": "Git Log",
+  "command": "git log --oneline -n 20 {path}",
+  "cwd": "{dir}",
+  "contexts": ["explorer", "scm"],
+  "icon": "git-commit"
+}
+```
 
-1. Clone the repository
-2. Run `npm install`
-3. Run `npm run compile`
-4. Press `F5` to open Extension Development Host
-5. Test your changes
+### Open Terminal
+```json
+{
+  "id": "openTerminal",
+  "label": "Open Terminal Here",
+  "command": "gnome-terminal",
+  "cwd": "{dir}",
+  "contexts": ["explorer"],
+  "icon": "terminal"
+}
+```
+
+### Make Executable
+```json
+{
+  "id": "makeExecutable",
+  "label": "Make Executable",
+  "command": "chmod +x {path}",
+  "contexts": ["explorer"],
+  "icon": "file-binary"
+}
+```
 
 ## Debugging
 
@@ -171,24 +200,25 @@ View command execution in Developer Tools:
 - Check working directory is correct
 
 **Installation fails?**
-- Ensure Node.js 18+ is installed
-- Try `npm install -g @vscode/vsce` first
-- Check `code` command is in PATH
+- Ensure VS Code 1.80.0 or higher
+- Try restarting VS Code
+- Check extension is enabled in Extensions view
 
 ## Updating the Extension
 
-```bash
-cd actions-for-vscode
-git pull
-./install.sh
-```
-
-Or:
+Updates are automatic via VS Code Marketplace. Or manually:
 
 ```bash
-npm run reinstall
+code --install-extension bassmanitram.actions-for-vscode --force
 ```
 
 ## Next Steps
 
-See [EXAMPLES.md](./EXAMPLES.md) for more configuration examples.
+- See [README.md](./README.md) for complete documentation
+- See [EXAMPLES.md](./EXAMPLES.md) for more configuration examples
+- See [CHANGELOG.md](./CHANGELOG.md) for version history
+
+## Getting Help
+
+- [GitHub Issues](https://github.com/bassmanitram/actions-for-vscode/issues)
+- [Marketplace Page](https://marketplace.visualstudio.com/items?itemName=bassmanitram.actions-for-vscode)
