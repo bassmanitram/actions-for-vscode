@@ -2,7 +2,7 @@
 
 ## Installation
 
-### Option 1: Quick Install (Recommended)
+### Option 1: Quick Install
 
 ```bash
 git clone https://github.com/bassmanitram/actions-for-vscode.git
@@ -10,7 +10,7 @@ cd actions-for-vscode
 ./install.sh
 ```
 
-The script handles everything: dependencies, compilation, packaging, and installation.
+The script handles dependencies, compilation, packaging, and installation.
 
 ### Option 2: NPM Script
 
@@ -33,14 +33,30 @@ code --install-extension $(ls -t *.vsix | head -n1)
 
 ## After Installation
 
-1. **Reload VS Code**: Press `Cmd/Ctrl+Shift+P` → "Developer: Reload Window"
-2. **Configure Actions**: Follow the configuration steps below
+1. Reload VS Code: `Cmd/Ctrl+Shift+P` → "Developer: Reload Window"
+2. Configure actions using the steps below
 
 ## Configure Your First Action
 
-1. Open Settings: `Cmd/Ctrl + ,`
+### Using Visual Settings Manager
+
+1. Open Command Palette: `Cmd/Ctrl+Shift+P`
+2. Type "Actions For VSCode: Manage Actions"
+3. Click "+ Add New Action"
+4. Fill in the form:
+   - ID: `openOrigin`
+   - Label: `Open Origin`
+   - Command: `G`
+   - Contexts: Check "Explorer"
+   - Icon: `link-external`
+5. Click "Save Action"
+
+### Using JSON Configuration
+
+1. Open Settings: `Cmd/Ctrl+,`
 2. Search for "Actions For VSCode"
-3. Click "Edit in settings.json"
+3. Click the link at the top: "Open Visual Settings Manager"
+   - Or click "Edit in settings.json" for direct JSON editing
 4. Add your configuration:
 
 ```json
@@ -66,7 +82,12 @@ code --install-extension $(ls -t *.vsix | head -n1)
 
 ## Adding More Actions
 
-Simply add more objects to the `actions` array:
+Using the Visual Manager:
+- Click "+ Add New Action" to add another
+- Click "Edit" on existing actions to modify them
+- Click "Delete" to remove actions
+
+Using JSON, add more objects to the `actions` array:
 
 ```json
 {
@@ -80,7 +101,7 @@ Simply add more objects to the `actions` array:
     {
       "id": "gitLog",
       "label": "Git Log",
-      "command": "git log --oneline -n 20 {file}",
+      "command": "git log --oneline -n 20 {path}",
       "cwd": "{dir}",
       "contexts": ["explorer", "scm"],
       "showNotification": false
@@ -88,7 +109,7 @@ Simply add more objects to the `actions` array:
     {
       "id": "copyPath",
       "label": "Copy Path",
-      "command": "echo -n {file} | xclip -selection clipboard",
+      "command": "echo -n {path} | xclip -selection clipboard",
       "contexts": ["explorer", "editor"]
     }
   ]
@@ -97,10 +118,11 @@ Simply add more objects to the `actions` array:
 
 ## Available Placeholders
 
-- `{file}` - Full path to selected file
+- `{path}` - Full path to selected item
+- `{file}` - Name only (no path)
 - `{files}` - All selected files (quoted, space-separated)
-- `{dir}` - Directory containing the file
-- `{filename}` - Filename only (no path)
+- `{dir}` - Parent directory
+- `{filename}` - Alias for `{file}`
 - `{workspace}` - Workspace root directory
 
 ## Working Directory
@@ -132,7 +154,7 @@ For extension development:
 View command execution in Developer Tools:
 
 1. `Help` → `Toggle Developer Tools`
-2. Go to `Console` tab
+2. Go to Console tab
 3. Look for `[actionId]` prefixed messages
 
 ## Common Issues

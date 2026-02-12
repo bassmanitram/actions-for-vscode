@@ -3,6 +3,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
+import { SettingsWebviewProvider } from './settingsWebview';
 
 const execAsync = promisify(exec);
 
@@ -19,6 +20,7 @@ interface CustomAction {
 
 export function activate(context: vscode.ExtensionContext) {
   let registeredCommands: vscode.Disposable[] = [];
+  const settingsWebview = new SettingsWebviewProvider(context);
 
   function registerActions() {
     // Dispose of all previously registered commands
@@ -98,7 +100,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
   context.subscriptions.push(configWatcher);
 
-  // Command to open settings
+  // Command to open settings (JSON)
   const openSettingsCmd = vscode.commands.registerCommand(
     'actionsForVscode.openSettings',
     () => {
@@ -109,6 +111,15 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
   context.subscriptions.push(openSettingsCmd);
+
+  // Command to open settings UI (Webview)
+  const manageActionsCmd = vscode.commands.registerCommand(
+    'actionsForVscode.manageActions',
+    () => {
+      settingsWebview.show();
+    }
+  );
+  context.subscriptions.push(manageActionsCmd);
 
   console.log('Actions For VSCode extension activated');
 }

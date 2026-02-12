@@ -5,7 +5,24 @@ All notable changes to the "Actions For VSCode" extension will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.0] - 2025-02-11
+## [0.4.0] - 2026-02-12
+
+### Added
+- Visual Settings Manager: Webview-based interface for managing actions
+  - Command: "Actions For VSCode: Manage Actions"
+  - Form-based add/edit interface with validation
+  - Visual checkboxes for contexts and options
+  - Inline help and icon reference links
+  - No JSON editing required
+  - Clickable link in VS Code settings UI to open Visual Settings Manager
+  - Settings integration: Link appears at top of "Actions" setting with command protocol
+
+### Changed
+- Updated README.md: Removed superlatives, hyperbole, and emojis for professional tone
+- Simplified feature descriptions and documentation structure
+- Improved clarity of configuration instructions
+
+## [0.3.0] - 2026-02-11
 
 ### Added
 - New `{path}` placeholder for full path to selected item (file or folder)
@@ -30,13 +47,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Corrected path parsing to properly handle folders vs files
 
 ### Documentation
+- Added "Managing Actions" section with Visual UI and JSON options
 - Added placeholder comparison table showing file vs folder behavior
 - Added troubleshooting section for working directory issues
 - Added note about workspace settings overriding user settings
 - Clarified `cwd` default behavior
 - Added developer console instructions for debugging
 
-## [0.1.0] - 2025-02-10
+## [0.1.0] - 2026-02-10
 
 ### Added
 - Initial release

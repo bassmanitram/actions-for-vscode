@@ -2,7 +2,7 @@
   "name": "actions-for-vscode",
   "displayName": "Actions For VSCode",
   "description": "Add custom actions to context menus with configurable commands.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "your-publisher-name",
   "license": "Apache-2.0",
   "repository": {
@@ -40,6 +40,10 @@
       {
         "command": "actionsForVscode.openSettings",
         "title": "Actions For VSCode: Open Settings"
+      },
+      {
+        "command": "actionsForVscode.manageActions",
+        "title": "Actions For VSCode: Manage Actions"
       }
     ],
     "menus": {
@@ -87,7 +91,7 @@
               "enabled": true
             }
           ],
-          "markdownDescription": "Array of custom actions to add to context menus.\n\n**Available placeholders:**\n- `{path}` - Full path to selected item\n- `{file}` - Name only (no path)\n- `{files}` - All selected files (space-separated, quoted)\n- `{dir}` - Parent directory\n- `{filename}` - Alias for {file}\n- `{workspace}` - Workspace root\n\n**Example:**\n```json\n{\n  \"id\": \"gitLog\",\n  \"label\": \"Git Log\",\n  \"command\": \"git log {path}\",\n  \"cwd\": \"{dir}\",\n  \"contexts\": [\"explorer\"],\n  \"icon\": \"git-commit\"\n}\n```",
+          "markdownDescription": "**[📝 Open Visual Settings Manager](command:actionsForVscode.manageActions)** - Manage actions with an easy-to-use interface (recommended)\n\n---\n\nArray of custom actions to add to context menus.\n\n**Available placeholders:**\n- `{path}` - Full path to selected item\n- `{file}` - Name only (no path)\n- `{files}` - All selected files (space-separated, quoted)\n- `{dir}` - Parent directory\n- `{filename}` - Alias for {file}\n- `{workspace}` - Workspace root\n\n**Example:**\n```json\n{\n  \"id\": \"gitLog\",\n  \"label\": \"Git Log\",\n  \"command\": \"git log {path}\",\n  \"cwd\": \"{dir}\",\n  \"contexts\": [\"explorer\"],\n  \"icon\": \"git-commit\"\n}\n```",
           "items": {
             "type": "object",
             "required": [
